@@ -1,0 +1,167 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Rotation codings are not permutable: Erdős #197 (partial result)"
+  description: >-
+    Proves the case d = 1 of Theorem K of the project's working notes: for irrational α, real β
+    and 0 ≤ a < b ≤ 1, the rotation coding {n ∈ ℕ : fract(nα + β) ∈ (a, b)} has no enumeration
+    without monotone 3-term arithmetic progressions; more precisely no superset of it has one.
+    The proof is an orbit lemma (infinite descent of positions along a chain u ↦ 2u − f with two
+    anchors f), an invariant interval for that chain, and density of fract(nα + β) along n ≥ N
+    from Dirichlet approximation. This is partial progress on Erdős Problem #197, which asks
+    whether ℕ can be partitioned into two such sets; that question remains open.
+  authors:
+    - "Alex Lopez"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Alex Lopez"
+
+classification:
+  arxiv: ["math.CO", "math.NT"]
+  msc2020: ["11B25", "05D10", "11K06"]
+
+sources:
+  - title: "Theorem K, d = 1: rotation codings are not permutable (docs/proof.md in this repository)"
+    type: original-proof
+    relationship: other
+    note: >-
+      The general Theorem K (d frequencies, open windows in the d-torus) was found in mission 2
+      of the project (ledger entry "m2-r3 order/multi") and survived three adversarial AI
+      referees (proof, computation and scope lenses). The refereed text is the working note
+      work/p197_m2_r3/order/proof.md (not included in this repository). docs/proof.md writes out
+      its d = 1 case, which the working note states as a reduction at the end of the proof; that
+      write-up was not refereed, and it is mirrored by the kernel-checked Lean proof. The
+      general Theorem K is NOT formalized.
+  - title: "Erdős Problem #197"
+    authors:
+      - "Thomas F. Bloom"
+    contributors:
+      - name: "Paul Erdős"
+        role: "problem-proposer"
+      - name: "Ronald Graham"
+        role: "problem-proposer"
+    id: "https://www.erdosproblems.com/197"
+    type: "web page"
+    relationship: background
+  - title: "On permutations containing no long arithmetic progressions"
+    authors:
+      - "J. A. Davis"
+      - "R. C. Entringer"
+      - "R. L. Graham"
+      - "G. J. Simmons"
+    type: "article"
+    location: "Acta Arithmetica 34 (1977), 81–90"
+    relationship: background
+    note: "Shows that every enumeration of ℕ contains a monotone 3-term arithmetic progression."
+  - title: "Structural rigidity in the Erdős–Graham two-set permutation problem"
+    authors:
+      - "William Kasel"
+    id: "arXiv:2609.02939"
+    type: "preprint"
+    relationship: background
+    note: >-
+      The working note credits the orbit lemma (a finite anchor set and an infinite chain
+      u_(k+1) = 2u_k − f_k rule out an enumeration) to "Kasel, Part I, Lemma 4" (his notes on the
+      problem); the lemma number has not been checked against this preprint. The same descent
+      argument is Erdos197Rho.chain in the erdos-197-rho project.
+
+related_formalizations:
+  - id: "https://github.com/Alex-lop/erdos-197-rho-partition"
+    relationship: builds-on
+    note: >-
+      Project of the same series (the exact ρ-partitions are not permutable; local name
+      erdos-197-rho). no_ap, Adm, adm_of_enum and anchor are copied verbatim into Erdos197Kron/Basic.lean (only
+      the namespace differs), and the statement uses the same unfolded predicate as
+      Erdos197Rho.main_result.
+  - id: "https://github.com/google-deepmind/formal-conjectures/blob/5d8b04d3d41b745cc3f2f3cdd5ed04b60c500983/FormalConjectures/ErdosProblems/197.lean"
+    relationship: other
+    note: >-
+      Statement of Erdős #197 (Erdos197.erdos_197). The no-monotone-AP predicate in the
+      conclusion of Erdos197Kron.main_result is formal-conjectures' ¬HasMonotoneAP
+      (Subtype.val ∘ f) 3 with the definitions unfolded, since Challenge.lean may import only
+      Mathlib. checks/fidelity.lean restates the theorem with verbatim copies of the definitions.
+
+status:
+  scope: >-
+    Fully formalizes Theorem K for d = 1 with an interval window (Erdos197Kron.main_result), its
+    superset form (kron_adm, kron_sub), the orbit lemma for two anchors, and density of
+    fract(nα + β) along n ≥ N for irrational α. The theorem with density as an explicit
+    hypothesis is kept as Erdos197Kron.main_of_dense. It does not resolve Erdős #197. Not
+    formalized: Theorem K for d ≥ 2 (Kronecker's theorem in the d-torus is not in Mathlib),
+    open windows in the circle, the Beatty parity corollary, Remark 1 (Bohr sets) and
+    Theorem RS (random sets) of the working note.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Claude Opus 5.5 (claude-opus-5-5)", "Claude Fable 5.2"]
+      framework: "Claude Code"
+      tool_setup: >-
+        Claude Code agents in an unattended research run on open Erdős problems. Theorem K was
+        found by a Claude Opus 5.5 subagent and refereed by three adversarial referee subagents
+        (Claude Fable 5.1 and Claude Opus 5.5) in mission 2, 2026-11-05. A Claude Opus 5.5
+        subagent wrote the Lean proof from a written brief, iterating with the Lean compiler
+        (omega, linarith, nlinarith), and packaged this repository; orchestration by Claude
+        Fable 5.2.
+      cost:
+        wall_time: "under one hour for the Lean formalization and packaging (2026-11-11)"
+        spend_usd: "subscription-based"
+        hardware: "local machine"
+      prompting_notes: >-
+        The user asked Claude to attack open Erdős problems, formalize what it proves and
+        package the results. No full solution of #197 was found; this repository packages a
+        partial result.
+  spend_usd: "subscription-based"
+  notes: >-
+    Produced by Claude models (Anthropic) in Claude Code under the direction of Alex Lopez; the
+    Lean code and write-up were written by Claude Opus 5.5. The informal proof of the general
+    Theorem K survived three adversarial AI referees; it has not been refereed by a human.
+
+fidelity:
+  divergences: >-
+    fract is Int.fract (r − ⌊r⌋ ∈ [0, 1)), n * α casts n : ℕ to ℝ, the window (a, b) is
+    Set.Ioo a b with 0 ≤ a < b ≤ 1 (an interval that does not wrap around 0), and Irrational is
+    Mathlib's. An enumeration is f : ℕ ≃ A with formal-conjectures' ¬HasMonotoneAP
+    (Subtype.val ∘ f) 3 unfolded; the bound AP start is named x instead of a. ℕ is Lean's
+    {0, 1, 2, …}, as in formal-conjectures. The working note's Theorem K is stated for open
+    windows U ⊆ 𝕋^d and d ≥ 1; only d = 1 with an interval window is formalized.
+
+review:
+  status: "self-assessed"
+  reviewers:
+    - "none"
+  notes: >-
+    Audited on 2026-11-11 by one independent Claude Opus 5.5 agent that did not write the code:
+    it read Challenge.lean and the new part of the proof file, re-ran the build (a cache replay),
+    the axiom report, the pp.all comparison, the fidelity and non-vacuity checks and the two
+    Palomar source validators, and asked for three documentation fixes (the Kasel reference and
+    this paragraph), which the orchestrator (Claude Fable 5.2) applied afterwards; the fixes were
+    not re-audited. The orchestrator also rebuilt the project from scratch and read the proof
+    file. No human has reviewed this repository.
+    The statements in Challenge.lean and Solution.lean were checked to elaborate
+    to identical terms (pp.all), and #print axioms reports only propext, Classical.choice and
+    Quot.sound for every theorem of Erdos197Kron/Basic.lean. checks/fidelity.lean restates the
+    theorem with verbatim copies of formal-conjectures' HasMonotoneAP, List.IsAPOfLength and
+    List.IsAPOfLengthWith and proves it by exact; it also shows that no set A containing a
+    rotation coding has an enumeration without monotone 3-term APs (so A, B is never a witness
+    for Erdos197.erdos_197). checks/nonvacuity.lean shows that the hypotheses are satisfiable
+    (α = √2, (a, b) = (1/4, 3/4)), that the enumeration predicate is satisfiable, and that every
+    set of the statement is infinite and has enumerations.
+
+alignment:
+  namespace: "Erdos197Kron"
+  statements:
+    - source: "work/p197_m2_r3/order/proof.md, Theorem K, case d = 1 (docs/proof.md, Section 5)"
+      lean: "Erdos197Kron.main_result"
+      module: "Challenge"
+      status: "proved"
+      note: >-
+        For Irrational α, β : ℝ and 0 ≤ a < b ≤ 1 there is no f : ℕ ≃
+        {n | Int.fract (n * α + β) ∈ Set.Ioo a b} with formal-conjectures'
+        ¬HasMonotoneAP (Subtype.val ∘ f) 3 (unfolded).
+
+acknowledgements: "Lean 4 and Mathlib; the formal-conjectures project for the statement of Erdős #197; Davis, Entringer, Graham and Simmons for the problem setting; W. Kasel for the orbit lemma; the Palomar template for the repository layout."
