@@ -2,7 +2,7 @@
 
 > **Status: PARTIAL result toward Erdős #197, NOT a solution.** This repository does **not** solve [Erdős Problem #197](https://www.erdosproblems.com/197), which is still open. It proves, and formally verifies in Lean 4, that the rotation (Sturmian) codings $\{n:\{n\alpha+\beta\}\in(a,b)\}$ with $\alpha$ irrational are not permutable: the case $d=1$ of Theorem K of the project's working notes.
 >
-> **Lean status:** kernel-checked (`lake build`, only `sorry` in `Challenge.lean`; `#print axioms` shows only `propext`, `Classical.choice`, `Quot.sound`). Audit: one independent AI auditor (Claude Opus 5.5, 2026-11-11) confirmed the statement and re-ran the checks; the three documentation fixes it asked for were applied afterwards and not re-audited. No human has reviewed this repository.
+> **Lean status:** kernel-checked (`lake build`, only `sorry` in `Challenge.lean`; `#print axioms` shows only `propext`, `Classical.choice`, `Quot.sound`). Audit: one independent AI auditor (Claude Opus 5.5, 2026-11-11) confirmed the statement and re-ran the checks; the three documentation fixes it asked for were applied afterwards and not re-audited. The Beatty parity corollary (`Erdos197Kron/Beatty.lean`, added 2026-11-16) is not covered by that audit: it was read by a second independent AI auditor (Claude Opus 5.5, 2026-11-16; statement and source, no rebuild), whose documentation fixes are applied here; the orchestrator of that run (Claude Opus 5.5) then rebuilt the project and re-ran the axiom report, the pp.all comparison of `Challenge.lean` and `Solution.lean`, both `checks/` files and the two Palomar source validators. No human has reviewed this repository.
 
 ## The result
 
@@ -10,7 +10,9 @@ Erdős #197 (Erdős–Graham) asks whether $\mathbb N$ can be partitioned into t
 
 **Theorem K, $d=1$** (`Erdos197Kron.main_result`). Let $\alpha$ be irrational, $\beta$ real and $0\le a<b\le1$. Then $A=\{n\in\mathbb N:\{n\alpha+\beta\}\in(a,b)\}$ has no enumeration without a monotone 3-term arithmetic progression. More precisely, no set $S\supseteq A$ is permutable (`Erdos197Kron.kron_sub`), so no partition of $\mathbb N$ with such an $A$ inside one class answers #197 positively.
 
-**What it does not reach.** The general Theorem K of the working notes ($d$ frequencies $\alpha\in\mathbb R^d$ with $1,\alpha_1,\dots,\alpha_d$ independent over $\mathbb Q$, any open window $U\subseteq\mathbb T^d$; Beatty parity colourings as a corollary) has a hand proof that survived three AI referees but is **not** formalized here. Neither are the Beatty parity corollary, windows given as open subsets of the circle, or Theorem RS (random sets) of the same notes.
+**What it does not reach.** The general Theorem K of the working notes ($d$ frequencies $\alpha\in\mathbb R^d$ with $1,\alpha_1,\dots,\alpha_d$ independent over $\mathbb Q$, any open window $U\subseteq\mathbb T^d$; Beatty parity colourings as a corollary) has a hand proof that survived three AI referees but is **not** formalized here. Neither are windows given as open subsets of the circle or Theorem RS (random sets) of the same notes.
+
+**Beatty parity corollary** (`Erdos197Kron.beatty_parity`, in `Erdos197Kron/Beatty.lean`, not part of `Challenge.lean`). For irrational $\alpha$, real $\beta$ and $r\in\{0,1\}$, the set $\{n\in\mathbb N:\lfloor n\alpha+\beta\rfloor\equiv r \pmod 2\}$ has no enumeration without monotone 3-term APs. It contains the rotation coding $\{n:\{n\alpha/2+\beta/2\}\in(r/2,(r+1)/2)\}$, so it follows from the superset form `kron_sub`.
 
 **Idea of the proof.** Pick two anchors $f_1,f_2\in A$ with $x_1=\{f_1\alpha+\beta\}<x_2=\{f_2\alpha+\beta\}$ and a start $u_0>f_1,f_2$ with $\{u_0\alpha+\beta\}\in[x_1,x_2]$. The map $u\mapsto2u-f_1$ (if $2\{u\alpha+\beta\}\le x_1+x_2$) or $u\mapsto2u-f_2$ (otherwise) keeps $\{u\alpha+\beta\}$ in $[x_1,x_2]\subseteq(a,b)$, so it gives an infinite increasing chain in $A$. In an enumeration, from some point on both anchors come before the chain, and the anchor rule ($f\prec u\Rightarrow 2u-f\prec u$) makes the positions decrease forever: impossible. Density of $\{n\alpha+\beta\}$ along $n\ge N$ comes from Dirichlet's approximation theorem. The whole argument is in [`docs/proof.md`](docs/proof.md).
 
@@ -21,6 +23,7 @@ Erdős #197 (Erdős–Graham) asks whether $\mathbb N$ can be partitioned into t
 | [`Challenge.lean`](Challenge.lean) | The statement to audit (Mathlib-only, proof `sorry`). |
 | [`Solution.lean`](Solution.lean) | The same statement, proved. |
 | [`Erdos197Kron/Basic.lean`](Erdos197Kron/Basic.lean) | The proof: orbit lemma, (K1), invariant interval, the theorem with density as a hypothesis (`main_of_dense`), density for irrational $\alpha$, the superset form. `no_ap`, `Adm`, `adm_of_enum` and `anchor` are copied verbatim from erdos-197-rho. |
+| [`Erdos197Kron/Beatty.lean`](Erdos197Kron/Beatty.lean) | The Beatty parity corollary (`floor_parity`, `beatty_parity`). |
 | [`checks/`](checks) | Fidelity and non-vacuity checks (not part of the build). |
 
 ```lean
@@ -33,7 +36,7 @@ theorem Erdos197Kron.main_result (α β a b : ℝ) (hα : Irrational α) (ha : 0
         l.Pairwise (· < ·)
 ```
 
-The inner predicate is formal-conjectures' `¬HasMonotoneAP (Subtype.val ∘ f) 3`, unfolded so that `Challenge.lean` imports only Mathlib; `checks/fidelity.lean` checks this by `exact`. `checks/nonvacuity.lean` shows that the hypotheses are satisfiable ($\alpha=\sqrt2$, $(a,b)=(1/4,3/4)$), that the enumeration predicate is satisfiable, and that every set of the statement is infinite and has enumerations.
+The inner predicate is formal-conjectures' `¬HasMonotoneAP (Subtype.val ∘ f) 3`, unfolded so that `Challenge.lean` imports only Mathlib; `checks/fidelity.lean` checks this by `exact`. `checks/nonvacuity.lean` shows that the hypotheses are satisfiable ($\alpha=\sqrt2$, $(a,b)=(1/4,3/4)$), that the enumeration predicate is satisfiable, and that every set of the statement is infinite and has enumerations; `beatty_infinite` shows the same for the Beatty parity sets, and `checks/fidelity.lean` also restates `beatty_parity` with formal-conjectures' predicate (`fc_beatty`).
 
 Build with `lake build` (Lean `v4.35.0`, Mathlib `v4.35.0`). Then run `lake env lean checks/fidelity.lean` and `lake env lean checks/nonvacuity.lean`; both end with `#print axioms`, which reports only `propext`, `Classical.choice` and `Quot.sound`.
 
@@ -45,7 +48,7 @@ Build with `lake build` (Lean `v4.35.0`, Mathlib `v4.35.0`). Then run `lake env 
 
 ## Use of AI
 
-This work was produced by Claude models (Anthropic) under the direction of **Alex Lopez**. The proof of Theorem K was found by a Claude Opus 5.5 agent in mission 2 of the project (2026-11-05, ledger entry "m2-r3 order/multi"); it survived three adversarial AI referees (Claude Fable 5.1 and Claude Opus 5.5 agents) and has not been refereed by a human. On 2026-11-11 a Claude Opus 5.5 agent wrote the Lean code and this repository, a second Claude Opus 5.5 agent audited it, and Claude Fable 5.2 orchestrated the run, rebuilt the project from scratch, read the proof file and applied the auditor's documentation fixes.
+This work was produced by Claude models (Anthropic) under the direction of **Alex Lopez**. The proof of Theorem K was found by a Claude Opus 5.5 agent in mission 2 of the project (2026-11-05, ledger entry "m2-r3 order/multi"); it survived three adversarial AI referees (Claude Fable 5.1 and Claude Opus 5.5 agents) and has not been refereed by a human. On 2026-11-11 a Claude Opus 5.5 agent wrote the Lean code and this repository, a second Claude Opus 5.5 agent audited it, and Claude Fable 5.2 orchestrated the run, rebuilt the project from scratch, read the proof file and applied the auditor's documentation fixes. `Erdos197Kron/Beatty.lean` was written on 2026-11-16 by a Claude Opus 5.5 session (mission 6 of the project) and read on the same day by one independent Claude Opus 5.5 auditor (mission 7).
 
 ## License
 

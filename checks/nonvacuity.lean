@@ -59,7 +59,22 @@ example : ¬ ∃ f : ℕ ≃ {n : ℕ | Int.fract (n * Real.sqrt 2 + 0) ∈ Set.
         l.Pairwise (· < ·) :=
   Erdos197Kron.main_result _ _ _ _ irrational_sqrt_two (by norm_num) (by norm_num) (by norm_num)
 
+/-- The Beatty parity sets of `Erdos197Kron.beatty_parity` are infinite (they contain a rotation
+coding), so that theorem is not true merely because the set is finite. -/
+theorem beatty_infinite (α β : ℝ) (hα : Irrational α) (r : ℕ) (hr : r < 2) :
+    Set.Infinite {n : ℕ | ⌊(n : ℝ) * α + β⌋ % 2 = r} := by
+  have hα2 : Irrational (α / 2) := by
+    simpa using hα.div_natCast (m := 2) (by norm_num)
+  have hr1 : (r : ℝ) ≤ 1 := by exact_mod_cast (show r ≤ 1 by omega)
+  refine (coding_infinite (α / 2) (β / 2) ((r : ℝ) / 2) (((r : ℝ) + 1) / 2) hα2 (by positivity)
+    (by linarith) (by linarith)).mono fun n hn => ?_
+  show ⌊(n : ℝ) * α + β⌋ % 2 = r
+  apply Erdos197Kron.floor_parity _ r hr
+  rw [show ((n : ℝ) * α + β) / 2 = n * (α / 2) + β / 2 by ring]
+  exact hn
+
 #print axioms hyps_sat
 #print axioms hf_sat
 #print axioms coding_infinite
 #print axioms coding_enumerable
+#print axioms beatty_infinite

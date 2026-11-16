@@ -44,5 +44,12 @@ theorem fc_erdos197_kron (α β a b : ℝ) (hα : Irrational α) (ha : 0 ≤ a) 
     ¬ ∃ f : ℕ ≃ A, ¬HasMonotoneAP (Subtype.val ∘ f) 3 :=
   fun ⟨f, hf⟩ => Erdos197Kron.kron_sub hα ha hab hb A hA f hf
 
+/-- The Beatty parity corollary restated with the formal-conjectures predicate; accepted by
+`exact`. -/
+theorem fc_beatty (α β : ℝ) (hα : Irrational α) (r : ℕ) (hr : r < 2) :
+    ¬ ∃ f : ℕ ≃ {n : ℕ | ⌊(n : ℝ) * α + β⌋ % 2 = r}, ¬HasMonotoneAP (Subtype.val ∘ f) 3 := by
+  exact Erdos197Kron.beatty_parity α β hα r hr
+
 #print axioms fc_main
 #print axioms fc_erdos197_kron
+#print axioms fc_beatty

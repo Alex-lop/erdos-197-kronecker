@@ -89,8 +89,9 @@ status:
     fract(nα + β) along n ≥ N for irrational α. The theorem with density as an explicit
     hypothesis is kept as Erdos197Kron.main_of_dense. It does not resolve Erdős #197. Not
     formalized: Theorem K for d ≥ 2 (Kronecker's theorem in the d-torus is not in Mathlib),
-    open windows in the circle, the Beatty parity corollary, Remark 1 (Bohr sets) and
-    Theorem RS (random sets) of the working note.
+    open windows in the circle, Remark 1 (Bohr sets) and
+    Theorem RS (random sets) of the working note. Also formalized, outside Challenge.lean: the
+    Beatty parity corollary (Erdos197Kron.beatty_parity).
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -142,6 +143,10 @@ review:
     this paragraph), which the orchestrator (Claude Fable 5.2) applied afterwards; the fixes were
     not re-audited. The orchestrator also rebuilt the project from scratch and read the proof
     file. No human has reviewed this repository.
+    Erdos197Kron/Beatty.lean (beatty_parity, added 2026-11-16, written by a Claude Opus 5.5
+    session) is not covered by that audit; one independent Claude Opus 5.5 auditor read its
+    statement and source on 2026-11-16 (no rebuild) and asked for documentation fixes, applied
+    in the same commit as the file.
     The statements in Challenge.lean and Solution.lean were checked to elaborate
     to identical terms (pp.all), and #print axioms reports only propext, Classical.choice and
     Quot.sound for every theorem of Erdos197Kron/Basic.lean. checks/fidelity.lean restates the
